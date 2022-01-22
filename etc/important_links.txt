@@ -1,0 +1,1 @@
+Demo of manipulating cmip6 data: https://github.com/hdrake/cmip6-temperature-demo/blob/master/notebooks/00_calculate_simulated_global_warming.ipynb
