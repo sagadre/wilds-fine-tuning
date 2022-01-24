@@ -25,6 +25,7 @@ dependencies:
   - zarr
   - xgcm
   - pip
+  - gcsfs
   - pip:
     - git+https://github.com/intake/filesystem_spec.git@master
     - intake-esm
