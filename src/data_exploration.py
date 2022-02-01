@@ -39,6 +39,8 @@ gmst_dict = {}
 i = 0
 for name, ds in tqdm(dset_dict.items()):
 
+    # print(name)
+    # continue
     # TODO: gotta debug this one
     if name == 'CMIP.MPI-M.ICON-ESM-LR.historical.Amon.gn':
         continue
