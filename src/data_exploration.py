@@ -39,10 +39,12 @@ gmst_dict = {}
 i = 0
 for name, ds in tqdm(dset_dict.items()):
 
-    # print(name)
+    print(name)
     # continue
     # TODO: gotta debug this one
     if name == 'CMIP.MPI-M.ICON-ESM-LR.historical.Amon.gn':
+        continue
+    if name == 'CMIP.MPI-M.MPI-ESM1-2-HR.historical.Amon.gn':
         continue
 
     # rename spatial dimensions if necessary
@@ -88,13 +90,14 @@ for name, ds in tqdm(dset_dict.items()):
     plt.figure(figsize=(9,7))
     ax = plt.subplot(1, 1, 1, projection=ortho)
 
-    q = temperature_change.plot(ax=ax, transform = geo) # plot a colormap in transformed coordinates
+    q = temperature_change.plot(ax=ax, transform=geo, vmin=-6, vmax=6, cmap=plt.get_cmap('coolwarm')) # plot a colormap in transformed coordinates
 
     ax.add_feature(cartopy.feature.COASTLINE)
-    ax.add_feature(cartopy.feature.BORDERS, linestyle='-')
-    plt.title('Patterns of global warming over the Americas',fontsize=16, ha='center')
+    # ax.add_feature(cartopy.feature.BORDERS, linestyle='-')
+    plt.title(f'Patterns of global warming over the Americas',fontsize=16, ha='center')
     plt.savefig(f'figs/historical_warming_patterns_{i}.png',dpi=100,bbox_inches='tight')
     plt.cla()
+    plt.close('all')
 
     print('here')
     i += 1

@@ -24,3 +24,10 @@ A potentially strong baseline here is nearest-neighbors between the empirical ob
 (2) Super Resolution
 Current climate models have a limitation that they must discretize the earth. Improving the resolution of climate models is an active area of research.
 One idea here is to pretrain a network on CMIP6 data (again for say surface temperature prediction task). Does pre-training on coarse resolution data and fine-tuning on localized empirical data allow us to get the best of both worlds?
+
+- week of Jan 31
+
+Made a visualization of the different CMIP6 ensemble members and realized there is a lot of disagreement about the predictions...
+Started bringing in some network code, but need to figure out which of the ensembles to fit. Moving in a direction of super resolution. Thinking that I am going to use a NeRF type formulation to fit a neural network to CMIP6 data. Thinking about this as pre-training, fine-tuning could then be about bringing in data from a specific region and time period.
+also looking at this paper: https://iopscience.iop.org/article/10.1088/1748-9326/ac1ed9
+to try to figure out why the models disagree so much.
