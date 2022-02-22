@@ -94,7 +94,7 @@ for name, ds in tqdm(dset_dict.items()):
 
     ax.add_feature(cartopy.feature.COASTLINE)
     # ax.add_feature(cartopy.feature.BORDERS, linestyle='-')
-    plt.title(f'Patterns of global warming over the Americas',fontsize=16, ha='center')
+    plt.title(f'Patterns of global warming over the Americas\n{gmst_dict[name]}',fontsize=16, ha='center')
     plt.savefig(f'figs/historical_warming_patterns_{i}.png',dpi=100,bbox_inches='tight')
     plt.cla()
     plt.close('all')

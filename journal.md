@@ -31,3 +31,9 @@ Made a visualization of the different CMIP6 ensemble members and realized there 
 Started bringing in some network code, but need to figure out which of the ensembles to fit. Moving in a direction of super resolution. Thinking that I am going to use a NeRF type formulation to fit a neural network to CMIP6 data. Thinking about this as pre-training, fine-tuning could then be about bringing in data from a specific region and time period.
 also looking at this paper: https://iopscience.iop.org/article/10.1088/1748-9326/ac1ed9
 to try to figure out why the models disagree so much.
+
+- week of Feb 7
+Chatted with Dylan from class and got some strategies for how to reconcile the CMIP6 model discrepancies. Seems like mean surface temperature is a way to go. For early data fitting I might also just consider just using one set of GT for simplicity rather than trying to find the best predictions from different climate models.
+
+- week of Feb 14
+Reviewed the NeRF paper to see how many of the principles can map over for climate modeling. The volumetric rendering piece does not seem super useful, but the fact that we can fit an mlp to pretty high frequency data is encouraging. This week I hope to start on implementation and over fitting to a simple training set. I will also consider using a transformer and not just mlp.
