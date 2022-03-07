@@ -37,3 +37,7 @@ Chatted with Dylan from class and got some strategies for how to reconcile the C
 
 - week of Feb 14
 Reviewed the NeRF paper to see how many of the principles can map over for climate modeling. The volumetric rendering piece does not seem super useful, but the fact that we can fit an mlp to pretty high frequency data is encouraging. This week I hope to start on implementation and over fitting to a simple training set. I will also consider using a transformer and not just mlp.
+
+## 2022-03-07 check in: alp
+
+Looking good. Would definitely encourage you to try to get some early results. Fine if you stick with the network architectures that were used by other researchers. Would also err on the side of simplicity.
