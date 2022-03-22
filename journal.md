@@ -37,3 +37,19 @@ Chatted with Dylan from class and got some strategies for how to reconcile the C
 
 - week of Feb 14
 Reviewed the NeRF paper to see how many of the principles can map over for climate modeling. The volumetric rendering piece does not seem super useful, but the fact that we can fit an mlp to pretty high frequency data is encouraging. This week I hope to start on implementation and over fitting to a simple training set. I will also consider using a transformer and not just mlp.
+
+- week of Feb 21
+As I dig into the data more, I also realize that it is more complex. There are many different simulations. I will stick to the historical split, which seems to be fit on historically collected temperatures.
+
+- week of Feb 28
+Not much progress made this week as shooting for a paper deadline.
+
+- week of Mar 7
+Not much progress made this week as shooting for a paper deadline.
+
+- week of Mar 14
+Spring break
+
+- week of Mar 22
+started writing data generation script, dataloader, and training loop.
+deciding on the train/test splits following original idea of interpolation and extrapolation regimes both in spatial and temporal dimension.
