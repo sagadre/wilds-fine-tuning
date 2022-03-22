@@ -47,9 +47,14 @@ Not much progress made this week as shooting for a paper deadline.
 - week of Mar 7
 Not much progress made this week as shooting for a paper deadline.
 
+## 2022-03-07 check in: alp
+
+Looking good. Would definitely encourage you to try to get some early results. Fine if you stick with the network architectures that were used by other researchers. Would also err on the side of simplicity.
+
 - week of Mar 14
 Spring break
 
 - week of Mar 22
 started writing data generation script, dataloader, and training loop.
 deciding on the train/test splits following original idea of interpolation and extrapolation regimes both in spatial and temporal dimension.
+
