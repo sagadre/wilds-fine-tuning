@@ -59,6 +59,5 @@ started writing data generation script, dataloader, and training loop.
 deciding on the train/test splits following original idea of interpolation and extrapolation regimes both in spatial and temporal dimension.
 
 - week of Mar 29
-started writing data generation script, dataloader, and training loop.
-deciding on the train/test splits following original idea of interpolation and extrapolation regimes both in spatial and temporal dimension.
+debug train scrip with mock data. can overfit on the mock data which is a good sign. working on full data generation with a NASA model's predictions
 
