@@ -1,4 +1,4 @@
-from src.models.layers import Feedforward
+from models.layers import Feedforward
 
 class ClimateNerf(Feedforward):
 

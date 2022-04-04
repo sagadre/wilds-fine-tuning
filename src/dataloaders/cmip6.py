@@ -1,23 +1,24 @@
 import os, json
 from torch.utils.data import Dataset
+import torch
 
 class Cmip6(Dataset):
     def __init__(self, dataset_json):
 
-        self.dataset = None
+        self.data = None
         with open(dataset_json, 'r') as f:
-            self.dataset = json.load(f)
+            self.data = json.load(f)
 
 
     def __len__(self):
-        return len(self.dataset)
+        return len(self.data)
 
     def __getitem__(self, idx):
 
-        lat = self.data[idx]['lat']
-        long = self.data[idx]['long']
-        time = self.data[idx]['time']
-        temp = self.data[idx]['temp']
+        lat = torch.tensor(self.data[idx]['lat']).float()
+        long = torch.tensor(self.data[idx]['long']).float()
+        time = torch.tensor(self.data[idx]['time']).float()
+        temp = torch.tensor(self.data[idx]['temp']).float()
 
         sample = {'lat': lat, 'long': long, 'time': time, 'temp': temp}
 
