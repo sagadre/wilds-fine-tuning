@@ -58,3 +58,7 @@ Spring break
 started writing data generation script, dataloader, and training loop.
 deciding on the train/test splits following original idea of interpolation and extrapolation regimes both in spatial and temporal dimension.
 
+- week of Mar 29
+started writing data generation script, dataloader, and training loop.
+deciding on the train/test splits following original idea of interpolation and extrapolation regimes both in spatial and temporal dimension.
+
