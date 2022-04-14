@@ -1,5 +1,6 @@
 import argparse
 import os
+from tabnanny import verbose
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,7 +24,6 @@ def train(model, device, train_loader, criterion, optimizer):
         num_samples += batch_size
 
 
-        print(sample['lat'].shape)
         # put data on appropriate device
         input_data = torch.cat((sample['lat'].unsqueeze(-1), sample['long'].unsqueeze(-1), sample['time'].unsqueeze(-1)), 1).to(device)
         gt = sample['temp'].unsqueeze(-1).to(device)
@@ -88,18 +88,21 @@ def main(args):
 
     # Define directories
     train_json = f'{args.data_dir}/train.json'
-    val_json = f'{args.data_dir}/val.json'
-    test_json = f'{args.data_dir}/test.json'
+    test_space_time_json = f'{args.data_dir}/test_space_time.json'
+    test_space_json = f'{args.data_dir}/test_space.json'
+    test_time_json = f'{args.data_dir}/test_time.json'
 
     # Create Datasets. You can use check_dataset(your_dataset) to check your implementation.
     train_dataset = Cmip6(train_json)
-    val_dataset = Cmip6(val_json)
-    test_dataset = Cmip6(test_json)
+    test_space_time_dataset = Cmip6(test_space_time_json)
+    test_space_dataset = Cmip6(test_space_json)
+    test_time_dataset = Cmip6(test_time_json)
 
     # Prepare Dataloaders. You can use check_dataloader(your_dataloader) to check your implementation.
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.n_workers)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers)
+    test_space_time_loader = DataLoader(test_space_time_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers)
+    test_space_loader = DataLoader(test_space_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers)
+    test_time_loader = DataLoader(test_time_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers)
 
     # Prepare model
 
@@ -107,22 +110,35 @@ def main(args):
     model.to(device)
 
     # Define criterion and optimizer
-    criterion = torch.nn.MSELoss()
+    test_criterion = torch.nn.MSELoss()
+    criterion = torch.nn.SmoothL1Loss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
     scheduler = CosineAnnealingLR(optimizer, args.epochs, last_epoch=-1)
 
 
     # Train and validate the model
     # TODO: Remember to include the saved learning curve plot in your report
-    epoch, max_epochs = 1, 20  # TODO: you may want to make changes here
+    epoch = 1
     while epoch <= args.epochs:
         print(f'Epoch {epoch}')
         train_loss = train(model, device, train_loader, criterion, optimizer)
         print(train_loss)
 
         # TODO: save model
+        # save checkpoint
+        torch.save(model.state_dict(), f'src/checkpoints/cmip6_{epoch}.pt')
+
         epoch += 1
         scheduler.step()
+
+        test_loss_space_time = val(model, device, test_space_time_loader, test_criterion)
+        print(f'MSE space-time: {test_loss_space_time}')
+
+        test_loss_space = val(model, device, test_space_loader, test_criterion)
+        print(f'MSE space: {test_loss_space}')
+
+        test_loss_time = val(model, device, test_time_loader, test_criterion)
+        print(f'MSE space: {test_loss_time}')
 
 
 if __name__ == '__main__':
@@ -130,10 +146,10 @@ if __name__ == '__main__':
     parser.add_argument('--data-dir', action='store', help='data dir')
     parser.add_argument('--val', action='store_true', help='run on val set')
     parser.add_argument('--test', action='store_true', help='run on test set')
-    parser.add_argument('--batch-size', action='store', default=128, help='batch size for train or val/test')
+    parser.add_argument('--batch-size', action='store', default=8192, help='batch size for train or val/test')
     parser.add_argument('--n-workers', action='store', default=8, help='number of worker threads')
-    parser.add_argument('--lr', action='store', default=0.01, help='starting learning rate')
-    parser.add_argument('--epochs', action='store', default=100, help='starting learning rate')
+    parser.add_argument('--lr', action='store', default=0.001, help='starting learning rate')
+    parser.add_argument('--epochs', action='store', default=20, help='starting learning rate')
 
     args = parser.parse_args()
     main(args)

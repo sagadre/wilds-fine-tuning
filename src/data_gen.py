@@ -8,6 +8,7 @@ import xesmf as xe
 import cartopy
 from tqdm.autonotebook import tqdm
 import intake
+import json
 
 plt.rcParams['figure.figsize'] = 12, 6
 
@@ -64,29 +65,51 @@ gmst_dict[name] = gmst.squeeze()
 # Add near-surface air temperature to dictionary
 ds_dict[name] = ds
 
-temperature_change = (
-    ds['tas'].sel(time=slice('1990','2010')).mean(dim='time') -
-    ds['tas'].sel(time=slice('1890','1910')).mean(dim='time')
-).compute()
-temperature_change.attrs.update(ds.attrs)
-temperature_change = temperature_change.rename(
-    r'temperature change ($^{\circ}$C) from 1890-1910 to 1990-2010'
-)
+train_data = []
+lats = ds['tas'].sel(time=slice('1990','2010')).mean(dim='time').lat.values
+lons = ds['tas'].sel(time=slice('1990','2010')).mean(dim='time').lon.values
 
-import cartopy.crs as ccrs
-ortho = ccrs.Orthographic(-90, 20) # define target coordinate frame
-geo = ccrs.PlateCarree() # define origin coordinate frame
+test_decades = (1920, 2010)
 
-plt.figure(figsize=(9,7))
-ax = plt.subplot(1, 1, 1, projection=ortho)
+test_data_space = []
+test_data_time = []
+test_data_space_time = []
 
-q = temperature_change.plot(ax=ax, transform=geo, vmin=-6, vmax=6, cmap=plt.get_cmap('coolwarm')) # plot a colormap in transformed coordinates
+for i in range(1850, 2020, 10):
+    temps = ds['tas'].sel(time=slice(str(i), str(i+10))).mean(dim='time').values.squeeze()
+    decade = i
 
-ax.add_feature(cartopy.feature.COASTLINE)
-# ax.add_feature(cartopy.feature.BORDERS, linestyle='-')
-plt.title(f'Patterns of global warming over the Americas\n{gmst_dict[name]}',fontsize=16, ha='center')
-plt.savefig(f'figs/historical_warming_patterns_nasa.png',dpi=100,bbox_inches='tight')
-plt.cla()
-plt.close('all')
+    for lat_idx in range(len(lats)):
+        for lon_idx in range(len(lons)):
 
-print('here')
+            valid_space = lat_idx % 2 == 1 or lon_idx % 2 == 1
+            valid_time = i not in test_decades
+
+            curr_dataset = None
+
+            if valid_space and valid_time:
+                curr_dataset = train_data
+            elif valid_space and not valid_time:
+                curr_dataset = test_data_time
+            elif not valid_space and valid_time:
+                curr_dataset = test_data_space
+            else:
+                curr_dataset = test_data_space_time
+
+            curr_dataset.append(
+                {
+                    "lat": lats[lat_idx].item(),
+                    "long": lons[lon_idx].item(),
+                    "time": i,
+                    "temp": temps[lat_idx, lon_idx].item()
+                }
+            )
+
+with open('/local/crv/sagadre/repos/wilds-fine-tuning/src/data/curr/train.json', 'w') as f:
+    json.dump(train_data, f, indent=4)
+with open('/local/crv/sagadre/repos/wilds-fine-tuning/src/data/curr/test_time.json', 'w') as f:
+    json.dump(test_data_time, f, indent=4)
+with open('/local/crv/sagadre/repos/wilds-fine-tuning/src/data/curr/test_space.json', 'w') as f:
+    json.dump(test_data_space, f, indent=4)
+with open('/local/crv/sagadre/repos/wilds-fine-tuning/src/data/curr/test_space_time.json', 'w') as f:
+    json.dump(test_data_space_time, f, indent=4)
