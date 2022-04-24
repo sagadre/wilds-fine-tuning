@@ -87,8 +87,9 @@ for name, ds in tqdm(dset_dict.items()):
     ortho = ccrs.Orthographic(-90, 20) # define target coordinate frame
     geo = ccrs.PlateCarree() # define origin coordinate frame
 
+
     plt.figure(figsize=(9,7))
-    ax = plt.subplot(1, 1, 1, projection=ortho)
+    ax = plt.subplot(1, 1, 1, projection=ccrs.PlateCarree())
 
     q = temperature_change.plot(ax=ax, transform=geo, vmin=-6, vmax=6, cmap=plt.get_cmap('coolwarm')) # plot a colormap in transformed coordinates
 

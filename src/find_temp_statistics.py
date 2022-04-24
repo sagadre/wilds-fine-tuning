@@ -13,5 +13,5 @@ for p in train_data:
 m = np.mean(temps)
 s = np.std(temps)
 
-print((np.min(temps)-m)/s)
-print((np.max(temps)-m)/s)
+print(np.min(temps))
+print(np.max(temps))

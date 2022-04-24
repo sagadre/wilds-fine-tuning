@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 from tabnanny import verbose
 
@@ -6,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-from dataloaders.cmip6 import Cmip6
+from dataloaders.cmip6 import Cmip6, pred_to_interpretable
 from models.climate_nerf import ClimateNerf
 from torch.optim import SGD
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -51,13 +52,15 @@ def train(model, device, train_loader, criterion, optimizer):
     return train_loss
 
 
-def val(model, device, val_loader, criterion):
+def val(model, device, val_loader, criterion, dump_path):
     """
     Similar to train(), but no need to backward and optimize.
     """
     model.eval()
     val_loss = 0.
     num_samples = 0
+
+    data = []
 
     with torch.no_grad():
         for sample in val_loader:
@@ -69,6 +72,17 @@ def val(model, device, val_loader, criterion):
             # forward pass
             pred = model(input_data)
 
+            for i in range(pred.shape[0]):
+                data.append(
+                    {
+                        'lat': input_data[i, 0].squeeze().item(),
+                        'long': input_data[i, 1].squeeze().item(),
+                        'time': input_data[i, 2].squeeze().item(),
+                        'pred_temp': pred_to_interpretable(pred[i].squeeze().item()),
+                        'gt_temp': pred_to_interpretable(gt[i].squeeze().item())
+                    }
+                )
+
             # compute loss
             loss = criterion(pred, gt)
 
@@ -77,6 +91,10 @@ def val(model, device, val_loader, criterion):
             num_samples += input_data.shape[0]
 
         val_loss /= num_samples
+
+    if dump_path is not None:
+        with open(dump_path, 'w') as f:
+            json.dump(data, f, indent=4)
 
     return val_loss
 
@@ -99,10 +117,10 @@ def main(args):
     test_time_dataset = Cmip6(test_time_json)
 
     # Prepare Dataloaders. You can use check_dataloader(your_dataloader) to check your implementation.
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.n_workers)
-    test_space_time_loader = DataLoader(test_space_time_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers)
-    test_space_loader = DataLoader(test_space_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers)
-    test_time_loader = DataLoader(test_time_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.n_workers, drop_last=True)
+    test_space_time_loader = DataLoader(test_space_time_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers, drop_last=False)
+    test_space_loader = DataLoader(test_space_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers, drop_last=False)
+    test_time_loader = DataLoader(test_time_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.n_workers, drop_last=False)
 
     # Prepare model
 
@@ -131,13 +149,25 @@ def main(args):
         epoch += 1
         scheduler.step()
 
-        test_loss_space_time = val(model, device, test_space_time_loader, test_criterion)
+        dump_path = None
+        dump_root = '/local/crv/sagadre/repos/wilds-fine-tuning/src/results'
+
+        if epoch == args.epochs:
+            dump_path = os.path.join(dump_root, 'space_time.json')
+
+        test_loss_space_time = val(model, device, test_space_time_loader, test_criterion, dump_path)
         print(f'MSE space-time: {test_loss_space_time}')
 
-        test_loss_space = val(model, device, test_space_loader, test_criterion)
+        if epoch == args.epochs:
+            dump_path = os.path.join(dump_root, 'space.json')
+
+        test_loss_space = val(model, device, test_space_loader, test_criterion, dump_path)
         print(f'MSE space: {test_loss_space}')
 
-        test_loss_time = val(model, device, test_time_loader, test_criterion)
+        if epoch == args.epochs:
+            dump_path = os.path.join(dump_root, 'time.json')
+
+        test_loss_time = val(model, device, test_time_loader, test_criterion, dump_path)
         print(f'MSE space: {test_loss_time}')
 
 
