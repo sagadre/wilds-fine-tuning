@@ -47,17 +47,17 @@ space_temps = [e['gt_temp'] for e in space]
 time_temps = [e['gt_temp'] for e in time]
 
 # fixed bin size
-bins = np.arange(200, 310, 2) # fixed bin size
+# bins = np.arange(200, 310, 2) # fixed bin size
 
-plt.xlim([200, 310])
+# plt.xlim([200, 310])
 
-a = plt.hist(space_temps, bins=bins, alpha=0.5)
-print(a)
-plt.title('Random Gaussian data (fixed bin size)')
-plt.xlabel('variable X (bin size = 5)')
-plt.ylabel('count')
-plt.savefig('tmp3.png')
-exit(0)
+# a = plt.hist(space_temps, bins=bins, alpha=0.5)
+# print(a)
+# plt.title('Random Gaussian data (fixed bin size)')
+# plt.xlabel('variable X (bin size = 5)')
+# plt.ylabel('count')
+# plt.savefig('tmp3.png')
+# exit(0)
 
 results = [space_time, space, time]
 
