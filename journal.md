@@ -61,3 +61,8 @@ deciding on the train/test splits following original idea of interpolation and e
 - week of Mar 29
 debug train scrip with mock data. can overfit on the mock data which is a good sign. working on full data generation with a NASA model's predictions
 
+- weeks of April 3 - April 17
+created dataset and got pretty good results fitting mlp to data. RMSE within 5deg of "gt"
+
+- weeks of April 24
+finished making plots, extended results to be per year instead of per decade, final paper
